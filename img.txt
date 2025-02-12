@@ -1,1 +1,1 @@
-sample:https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYGMzC_bUtZVw0HaDH1hMWnNBW9I8agS-4Lg&s
+sample: https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTYGMzC_bUtZVw0HaDH1hMWnNBW9I8agS-4Lg&s

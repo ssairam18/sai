@@ -1,4 +1,3 @@
-// styles.txt
 Photorealistic
 HDR Photography
 Ultra-Realistic

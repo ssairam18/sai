@@ -114,13 +114,17 @@
         }
 
         #styleCombinationInput {
-            width: 100%;
+            width: 98%;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 16px;
             margin-bottom: 20px;
         }
+label[for=""] {
+  display: none;
+}
+
     </style>
 </head>
 <body>
@@ -140,7 +144,7 @@
             </div>
         </div>
 
-        <h3>Number of Styles (#) / Combinations ($):</h3>
+        
         <input type="text" id="styleCombinationInput" placeholder="#2;$3">
 
         <h3>Select Styles:</h3>
@@ -163,6 +167,7 @@
             
             populateStyles();
             populateCombinations();
+            loadSavedSelections(); // Load saved selections from localStorage
             generatePrompt(); // Ensure the prompt is generated after loading
         }
 
@@ -170,18 +175,20 @@
             const styleListDiv = document.getElementById('styleList');
             styleListDiv.innerHTML = '';
             styles.forEach(style => {
-                const styleId = style.replace(/\s+/g, '-').toLowerCase();
-                const styleCheckbox = document.createElement('input');
-                styleCheckbox.type = 'checkbox';
-                styleCheckbox.id = styleId;
-                styleCheckbox.value = style;
+                if (style) { // Ensure blank styles are not displayed
+                    const styleId = style.replace(/\s+/g, '-').toLowerCase();
+                    const styleCheckbox = document.createElement('input');
+                    styleCheckbox.type = 'checkbox';
+                    styleCheckbox.id = styleId;
+                    styleCheckbox.value = style;
 
-                const styleLabel = document.createElement('label');
-                styleLabel.setAttribute('for', styleId);
-                styleLabel.innerText = style;
+                    const styleLabel = document.createElement('label');
+                    styleLabel.setAttribute('for', styleId);
+                    styleLabel.innerText = style;
 
-                styleListDiv.appendChild(styleCheckbox);
-                styleListDiv.appendChild(styleLabel);
+                    styleListDiv.appendChild(styleCheckbox);
+                    styleListDiv.appendChild(styleLabel);
+                }
             });
         }
 
@@ -189,18 +196,20 @@
             const combinationListDiv = document.getElementById('combinationList');
             combinationListDiv.innerHTML = '';
             combinations.forEach(combination => {
-                const comboId = combination.join('-').replace(/\s+/g, '-').toLowerCase();
-                const combinationCheckbox = document.createElement('input');
-                combinationCheckbox.type = 'checkbox';
-                combinationCheckbox.id = comboId;
-                combinationCheckbox.value = combination.join(', ');
+                if (combination.length > 0) { // Ensure blank combinations are not displayed
+                    const comboId = combination.join('-').replace(/\s+/g, '-').toLowerCase();
+                    const combinationCheckbox = document.createElement('input');
+                    combinationCheckbox.type = 'checkbox';
+                    combinationCheckbox.id = comboId;
+                    combinationCheckbox.value = combination.join(', ');
 
-                const combinationLabel = document.createElement('label');
-                combinationLabel.setAttribute('for', comboId);
-                combinationLabel.innerText = combination.join(', ');
+                    const combinationLabel = document.createElement('label');
+                    combinationLabel.setAttribute('for', comboId);
+                    combinationLabel.innerText = combination.join(', ');
 
-                combinationListDiv.appendChild(combinationCheckbox);
-                combinationListDiv.appendChild(combinationLabel);
+                    combinationListDiv.appendChild(combinationCheckbox);
+                    combinationListDiv.appendChild(combinationLabel);
+                }
             });
         }
 
@@ -236,6 +245,7 @@
                 });
             }
 
+            saveSelections(); // Save selections to localStorage
             generatePrompt();
         }
 
@@ -255,6 +265,34 @@
             const finalPromptText = document.getElementById('finalPrompt').innerText;
             navigator.clipboard.writeText(finalPromptText).then(() => {
                 alert('Prompt copied to clipboard!');
+            });
+        }
+
+        function saveSelections() {
+            const selectedStyles = Array.from(document.querySelectorAll('.styles input:checked')).map(input => input.value);
+            const selectedCombinations = Array.from(document.querySelectorAll('.combinations input:checked')).map(input => input.value);
+            localStorage.setItem('selectedStyles', JSON.stringify(selectedStyles));
+            localStorage.setItem('selectedCombinations', JSON.stringify(selectedCombinations));
+        }
+
+        function loadSavedSelections() {
+            const savedStyles = JSON.parse(localStorage.getItem('selectedStyles')) || [];
+            const savedCombinations = JSON.parse(localStorage.getItem('selectedCombinations')) || [];
+
+            savedStyles.forEach(style => {
+                const styleId = style.replace(/\s+/g, '-').toLowerCase();
+                const styleCheckbox = document.getElementById(styleId);
+                if (styleCheckbox) {
+                    styleCheckbox.checked = true;
+                }
+            });
+
+            savedCombinations.forEach(combo => {
+                const comboId = combo.replace(/, /g, '-').replace(/\s+/g, '-').toLowerCase();
+                const comboCheckbox = document.getElementById(comboId);
+                if (comboCheckbox) {
+                    comboCheckbox.checked = true;
+                }
             });
         }
 

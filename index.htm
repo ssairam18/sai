@@ -1,1 +1,268 @@
-ssairam18
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Image Generator</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h2, h3 {
+            color: #333;
+        }
+
+        .input-output-container {
+            display: flex;
+            gap: 100px;
+            margin-bottom: 20px;
+        }
+
+        .input-area, .output-area {
+            flex: 1;
+        }
+
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            resize: vertical;
+        }
+
+        .output {
+            background: #f9f9f9;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            height: 150px;
+            overflow-y: auto;
+        }
+
+        .output p {
+            margin: 0;
+            font-size: 16px;
+            color: #555;
+        }
+
+        .copy-button {
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s ease;
+        }
+
+        .copy-button:hover {
+            background-color: #0056b3;
+        }
+
+        .styles, .combinations {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .styles label, .combinations label {
+            display: inline-block;
+            padding: 10px 15px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            font-size: 14px;
+        }
+
+        .styles input[type="checkbox"], .combinations input[type="checkbox"] {
+            display: none;
+        }
+
+        .styles input[type="checkbox"]:checked + label,
+        .combinations input[type="checkbox"]:checked + label {
+            background-color: #28a745;
+            color: white;
+        }
+
+        .styles label:hover, .combinations label:hover {
+            transform: scale(1.05);
+            background-color: #ddd;
+        }
+
+        .highlight {
+            background-color: yellow;
+            font-weight: bold;
+        }
+
+        #styleCombinationInput {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>AI Image Generator</h2>
+        
+        <div class="input-output-container">
+            <div class="input-area">
+                <textarea id="description" placeholder="Describe your image..."></textarea>
+            </div>
+            <div class="output-area">
+                <div class="output">
+                    <p id="finalPrompt"></p>
+                    <button class="copy-button" id="copyButton" onclick="copyToClipboard()">Copy to Clipboard</button>
+                </div>
+            </div>
+        </div>
+
+        <h3>Number of Styles (#) / Combinations ($):</h3>
+        <input type="text" id="styleCombinationInput" placeholder="#2;$3">
+
+        <h3>Select Styles:</h3>
+        <div class="styles" id="styleList"></div>
+
+        <h3>Select Style Combinations:</h3>
+        <div class="combinations" id="combinationList"></div>
+    </div>
+
+    <script>
+        let styles = [];
+        let combinations = [];
+
+        async function fetchStylesAndCombinations() {
+            const stylesResponse = await fetch('https://raw.githubusercontent.com/ssairam18/sai/refs/heads/master/styles.txt');
+            styles = (await stylesResponse.text()).split('\n').map(s => s.trim()).filter(Boolean);
+            
+            const combinationsResponse = await fetch('https://raw.githubusercontent.com/ssairam18/sai/refs/heads/master/combinations.txt');
+            combinations = (await combinationsResponse.text()).split('\n').map(c => c.trim().split(',').map(s => s.trim())).filter(Boolean);
+            
+            populateStyles();
+            populateCombinations();
+            generatePrompt(); // Ensure the prompt is generated after loading
+        }
+
+        function populateStyles() {
+            const styleListDiv = document.getElementById('styleList');
+            styleListDiv.innerHTML = '';
+            styles.forEach(style => {
+                const styleId = style.replace(/\s+/g, '-').toLowerCase();
+                const styleCheckbox = document.createElement('input');
+                styleCheckbox.type = 'checkbox';
+                styleCheckbox.id = styleId;
+                styleCheckbox.value = style;
+
+                const styleLabel = document.createElement('label');
+                styleLabel.setAttribute('for', styleId);
+                styleLabel.innerText = style;
+
+                styleListDiv.appendChild(styleCheckbox);
+                styleListDiv.appendChild(styleLabel);
+            });
+        }
+
+        function populateCombinations() {
+            const combinationListDiv = document.getElementById('combinationList');
+            combinationListDiv.innerHTML = '';
+            combinations.forEach(combination => {
+                const comboId = combination.join('-').replace(/\s+/g, '-').toLowerCase();
+                const combinationCheckbox = document.createElement('input');
+                combinationCheckbox.type = 'checkbox';
+                combinationCheckbox.id = comboId;
+                combinationCheckbox.value = combination.join(', ');
+
+                const combinationLabel = document.createElement('label');
+                combinationLabel.setAttribute('for', comboId);
+                combinationLabel.innerText = combination.join(', ');
+
+                combinationListDiv.appendChild(combinationCheckbox);
+                combinationListDiv.appendChild(combinationLabel);
+            });
+        }
+
+        function updateSelections() {
+            const inputVal = document.getElementById('styleCombinationInput').value;
+            const styleMatch = inputVal.match(/#(\d+)/);
+            const combinationMatch = inputVal.match(/\$(\d+)/);
+            
+            document.querySelectorAll('.styles input').forEach(chk => chk.checked = false);
+            document.querySelectorAll('.combinations input').forEach(chk => chk.checked = false);
+
+            if (styleMatch) {
+                let numStyles = Math.min(parseInt(styleMatch[1]), styles.length);
+                let selectedStyles = new Set();
+                while (selectedStyles.size < numStyles) {
+                    selectedStyles.add(styles[Math.floor(Math.random() * styles.length)]);
+                }
+                selectedStyles.forEach(style => {
+                    const styleId = style.replace(/\s+/g, '-').toLowerCase();
+                    document.getElementById(styleId).checked = true;
+                });
+            }
+
+            if (combinationMatch) {
+                let numCombinations = Math.min(parseInt(combinationMatch[1]), combinations.length);
+                let selectedCombinations = new Set();
+                while (selectedCombinations.size < numCombinations) {
+                    selectedCombinations.add(combinations[Math.floor(Math.random() * combinations.length)].join(', '));
+                }
+                selectedCombinations.forEach(combo => {
+                    const comboId = combo.replace(/, /g, '-').replace(/\s+/g, '-').toLowerCase();
+                    document.getElementById(comboId).checked = true;
+                });
+            }
+
+            generatePrompt();
+        }
+
+        function generatePrompt() {
+            let prompt = document.getElementById('description').value.trim();
+            const selectedStyles = Array.from(document.querySelectorAll('.styles input:checked')).map(input => input.value);
+            const selectedCombinations = Array.from(document.querySelectorAll('.combinations input:checked')).map(input => input.value);
+            
+            const allSelections = [...selectedStyles, ...selectedCombinations];
+            let uniqueSelections = [...new Set(allSelections)];
+            let duplicateSelections = allSelections.filter((item, index) => allSelections.indexOf(item) !== index);
+            
+            document.getElementById('finalPrompt').innerHTML = prompt + (uniqueSelections.length > 0 ? ', ' + uniqueSelections.join(', ') : '');
+        }
+
+        function copyToClipboard() {
+            const finalPromptText = document.getElementById('finalPrompt').innerText;
+            navigator.clipboard.writeText(finalPromptText).then(() => {
+                alert('Prompt copied to clipboard!');
+            });
+        }
+
+        document.getElementById('styleCombinationInput').addEventListener('input', updateSelections);
+        document.getElementById('description').addEventListener('input', generatePrompt);
+
+        fetchStylesAndCombinations();
+    </script>
+
+</body>
+</html>

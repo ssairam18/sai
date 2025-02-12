@@ -1,0 +1,105 @@
+// styles.txt
+Photorealistic
+HDR Photography
+Ultra-Realistic
+Fantasy
+Dark Fantasy
+Gothic
+Anime
+Manga
+Chibi
+80s Retro Wave
+Neon Glow
+Synthwave
+Minimalist
+Flat Design
+Bauhaus
+Oil Painting
+Acrylic Painting
+Impressionism
+Cyberpunk
+Pixel Art
+Steampunk
+Surrealism
+Watercolor
+Charcoal Drawing
+Noir
+Futuristic
+3D Rendered
+Isometric 3D
+Vector Art
+Geometric Art
+Pointillism
+Comic Book
+Tribal Art
+Ukiyo-e
+Space Art
+Low-Poly
+Glitch Art
+Wireframe 3D
+Film Grain
+Vintage Poster
+Aztec Pattern
+Abstract
+Cubism
+Psychedelic
+Graffiti
+Digital Painting
+Hand-Drawn Sketch
+Flat Illustration
+Expressionism
+Matte Painting
+Vaporwave
+Synthpop
+Tattoo Art
+Fantasy Illustration
+Dreamlike
+Hyperrealism
+Silhouette Art
+Chalk Drawing
+Pencil Sketch
+Batik Style
+Neoclassical
+Fauvism
+Pop Art
+Photo Collage
+Retro Sci-Fi
+Woodcut Print
+Stencil Art
+Baroque
+Medieval Art
+Typography Art
+Stencil Graffiti
+Kawaii Art
+Emoji Style
+Meme Art
+Monochrome
+Zentangle
+Origami Style
+Glass Painting
+Mecha Design
+Doodle Art
+Architectural Rendering
+Nordic Minimalism
+Paper Cutout
+Renaissance Style
+Dystopian
+Sci-Fi Futurism
+Street Art
+Chromatic Abstraction
+Bioluminescent Style
+Luminous Glow
+Ink Wash
+Neon Fantasy
+Dot Work
+Textured Canvas
+Rustic Folk Art
+Gilded Art
+Laser Engraved
+Ink Tattoo
+Psychedelic Vision
+Faux 3D
+Neon Doodle
+Ancient Manuscript
+Ceramic Pattern
+Dynamic Motion Blur

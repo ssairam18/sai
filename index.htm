@@ -258,14 +258,13 @@ label[for=""] {
             let duplicateSelections = allSelections.filter((item, index) => allSelections.indexOf(item) !== index);
             
             document.getElementById('finalPrompt').innerHTML = prompt + (uniqueSelections.length > 0 ? ', ' + uniqueSelections.join(', ') : '');
-        }
-
-        function copyToClipboard() {
-            const finalPromptText = document.getElementById('finalPrompt').innerText;
+                    const finalPromptText = document.getElementById('finalPrompt').innerText;
             navigator.clipboard.writeText(finalPromptText).then(() => {
-                alert('Prompt copied to clipboard!');
+                
             });
         }
+
+
 
         function saveSelections() {
             const selectedStyles = Array.from(document.querySelectorAll('.styles input:checked')).map(input => input.value);
